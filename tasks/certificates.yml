@@ -1,0 +1,8 @@
+---
+
+- name: Install certificates
+  include: certificates-each.yml
+  with_dict:
+    "{{ gluu_certificates | default({}) }}"
+  loop_control:
+    loop_var: certificate

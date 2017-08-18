@@ -1,0 +1,13 @@
+
+- name: "Gluu Cluster - OpenLDAP - listen for external IP"
+  lineinfile:
+    path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/symas-openldap.conf
+    regexp: '^HOST_LIST=".*'
+    line: 'HOST_LIST="ldaps://127.0.0.1:1636/ ldaps://{{ gluu_ip }}:1636/"'
+
+- name: "Gluu Cluster - OpenLDAP - Update ExtraArgs"
+  lineinfile:
+    path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/symas-openldap.conf
+    regexp: '^EXTRA_SLAPD_ARGS="'
+    line: 'EXTRA_SLAPD_ARGS="-F /opt/symas/etc/openldap/slapd.d"'
+  when: gluu_cluster_ldap_replication

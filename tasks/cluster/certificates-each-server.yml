@@ -1,0 +1,11 @@
+---
+
+- set_fact:
+    gluu_internal_hostname_other: "{{ hostvars[item].gluu_internal_hostname }}"
+
+- name: "Gluu Cluster - Install certificates from other servers for host {{ item }}"
+  include: certificates-each-server-each.yml
+  with_dict:
+    "{{ hostvars[item].gluu_certificates | default({}) }}"
+  loop_control:
+    loop_var: certificate

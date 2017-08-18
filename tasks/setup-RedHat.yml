@@ -1,0 +1,35 @@
+---
+- name: Install the libselinux-python package
+  yum: name=libselinux-python state=installed
+
+- name: Add Gluu repository
+  template:
+    src: gluu.repo.j2
+    dest: /etc/yum.repos.d/gluu.repo
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Install gluu-server package
+  yum:
+    name: "gluu-server-{{ gluu_version }}*"
+    state: installed
+    enablerepo: gluu
+
+- name: Install global python requirements for pip
+  yum:
+    name: "{{item}}"
+    state: installed
+  with_items:
+    - gcc
+    - python-devel
+    - openldap-devel
+    - python-pip
+    - zip
+
+- name: Enable Gluu service
+  command: /sbin/gluu-serverd-{{ gluu_version }} enable
+
+- name: Start Gluu service
+  command: /sbin/gluu-serverd-{{ gluu_version }} start
+

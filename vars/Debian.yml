@@ -1,0 +1,17 @@
+---
+__gluu_repository_gpg_key:
+    zesty: "https://repo.gluu.org/ubuntu/gluu-apt.key"
+    trusty: "https://repo.gluu.org/ubuntu/gluu-apt.key"
+    xenial: "https://repo.gluu.org/ubuntu/gluu-apt.key"
+    jessie: "https://repo.gluu.org/debian/gluu-apt.key"
+    wheezy: "https://repo.gluu.org/debian/gluu-apt.key"
+    squeeze: "https://repo.gluu.org/debian/gluu-apt.key"
+__gluu_repository:
+    zesty: "deb https://repo.gluu.org/ubuntu/ zesty main"
+    trusty: "deb https://repo.gluu.org/ubuntu/ trusty main"
+    xenial: "deb https://repo.gluu.org/ubuntu/ xenial main"
+    jessie: "deb https://repo.gluu.org/debian/ stable main"
+    wheezy: "deb https://repo.gluu.org/debian/ stable main"
+    squeeze: "deb https://repo.gluu.org/debian/ stable main"
+
+gluu_container_command: /usr/sbin/chroot /opt/gluu-server-{{ gluu_version }}/ sh -c

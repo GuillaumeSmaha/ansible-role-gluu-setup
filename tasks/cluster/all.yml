@@ -1,0 +1,17 @@
+
+- set_fact:
+    oxauth_ldap_server_list: ""
+
+- name: "Gluu Cluster - Generate LDAP server list"
+  set_fact:
+    oxauth_ldap_server_list: "{{ oxauth_ldap_server_list }},{{ hostvars[item]['gluu_internal_hostname'] }}:1636"
+  when:  "'ldap' in hostvars[item]['gluu_modules']"
+  with_items:
+    "{{ groups['gluu-servers'] }}"
+
+     
+- name: "Gluu Cluster - oxAuth - Set all LDAP servers in configuration file"
+  lineinfile:
+    path: /opt/gluu-server-{{ gluu_version }}/etc/gluu/conf/ox-ldap.properties
+    regexp: "^servers: .*"
+    line: "servers: {{ gluu_ldap_hostname | default(oxauth_ldap_server_list) | regex_replace('^,', '') }}"

@@ -1,0 +1,35 @@
+---
+- name: Install apt key for Gluu repository
+  apt_key:
+    url: "{{ __gluu_repository_gpg_key[ansible_distribution_release] }}"
+
+- name: Add Gluu repository
+  apt_repository:
+    repo: "{{ __gluu_repository[ansible_distribution_release] }}"
+    state: present
+
+- name: Install gluu-server package
+  apt:
+    name: "gluu-server-{{ gluu_version }}*"
+    update_cache: yes
+    state: installed
+
+- name: Install global python requirements for pip
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    state: installed
+  with_items:
+    - libsasl2-dev
+    - python-dev
+    - libldap2-dev
+    - libssl-dev
+    - python-pip
+    - zip
+
+- name: Start and Enable Gluu container
+  service:
+    name: gluu-server-{{ gluu_version }}
+    state: started
+    enabled: yes
+

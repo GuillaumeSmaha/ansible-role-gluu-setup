@@ -1,0 +1,23 @@
+
+
+- name: PreInstall - LDAP - Install python-ldap inside container for Ubuntu
+  command: "{{ gluu_container_command }} 'apt-get install python-ldap'"
+  when: ansible_os_family == 'Debian'
+
+- name: PreInstall - LDAP - Copy custom schema LDAP
+  template:
+    src: "{{ gluu_ldap_custom_schema_file }}"
+    dest: /opt/gluu-server-{{ gluu_version }}/install/community-edition-setup/schema/custom_schema.json
+    mode: 0644
+    owner: root
+    group: root
+  register: ldap_copy_custom_schema
+
+- name: PreInstall - LDAP - Generate OpenLDAP schema
+  command: "{{ gluu_container_command }} 'cd /install/community-edition-setup/schema/ && python manager.py --type openldap --filename custom_schema.json autogenerate'"
+  when: ldap_copy_custom_schema.changed
+
+- name: PreInstall - LDAP - Generate OpenDJ schema
+  command: "{{ gluu_container_command }} 'cd /install/community-edition-setup/schema/ && python manager.py --type opendj --filename custom_schema.json autogenerate'"
+  when: ldap_copy_custom_schema.changed
+  

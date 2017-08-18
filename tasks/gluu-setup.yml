@@ -1,0 +1,35 @@
+---
+- name: Check if Gluu is already setup
+  stat:
+    path: /opt/gluu-server-{{ gluu_version }}/install/community-edition-setup/setup.properties.last
+  register: gluu_is_setup
+
+- include: pre-setup/ldap-schema.yml
+  when: "'ldap' in gluu_modules and gluu_is_setup.stat.exists == False"
+ 
+- name: Get Default Configuration From another host - Register in variable
+  set_fact:
+    gluu_default_setup_properties: "{{ hostvars[gluu_install_from].gluu_default_setup_properties }}"
+  when: gluu_is_setup.stat.exists == False and gluu_install_from is defined and hostvars[gluu_install_from] is defined
+
+- name: Copy Gluu Setup Configuration
+  template:
+    src: setup.properties.j2
+    dest: /opt/gluu-server-{{ gluu_version }}/install/community-edition-setup/setup.properties
+    mode: 0644
+    owner: root
+    group: root
+  when: gluu_is_setup.stat.exists == False
+
+- name: Setup Gluu Configuration
+  command: "{{ gluu_container_command }} 'cd /install/community-edition-setup/ && ./setup.py -n -f ./setup.properties -d /install/community-edition-setup'"
+  when: gluu_is_setup.stat.exists == False
+
+- name: Get Generated Configuration - Get content
+  slurp:
+    src: /opt/gluu-server-{{ gluu_version }}/install/community-edition-setup/setup.properties.last
+  register: config_generated
+ 
+- name: Get Generated Configuration - Register in variable
+  set_fact:
+    gluu_default_setup_properties: "{{ config_generated['content'] | b64decode }}"

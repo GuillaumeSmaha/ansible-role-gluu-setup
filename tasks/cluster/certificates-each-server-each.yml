@@ -1,0 +1,29 @@
+---
+
+- name: 'Gluu Cluster - Host {{ item }} - Certificate {{ certificate.key }}'
+  block:
+    - name: 'Gluu Cluster - Host {{ item }} - Certificate {{ certificate.key }} - Copy public key'
+      copy:
+        src: '{{ certificate.value.publicKey }}'
+        dest: '/opt/gluu-server-{{ gluu_version }}/etc/certs/{{ gluu_internal_hostname_other }}_{{ certificate.value.publicKey | basename }}'
+      register: certificate_copy
+
+    - name: 'Gluu Cluster - Host {{ item }} - Certificate {{ certificate.key }} - Check DER public key exists'
+      stat:
+        path: '/opt/gluu-server-{{ gluu_version }}/etc/certs/{{ gluu_internal_hostname_other }}_{{ certificate.value.publicKey | basename }}.der'
+      register: certificate_der_check
+      when: certificate_copy.changed == False
+
+    - name: 'Gluu Cluster - Host {{ item }} - Certificate {{ certificate.key }} - Convert public key to DER format'
+      command: "openssl x509 -outform der -in /opt/gluu-server-{{ gluu_version }}/etc/certs/{{ gluu_internal_hostname_other }}_{{ certificate.value.publicKey | basename }} -out /opt/gluu-server-{{ gluu_version }}/etc/certs/{{ gluu_internal_hostname_other }}_{{ certificate.value.publicKey | basename }}.der"
+      when: certificate_copy.changed or certificate_der_check.changed
+
+    - name: 'Gluu Cluster - Host {{ item }} - Certificate {{ certificate.key }} - Delete old public key from Java Key Store'
+      command: '{{ gluu_jdk_path }}/bin/keytool -delete -alias "{{ gluu_internal_hostname }}_{{ gluu_internal_hostname_other }}_{{ certificate.key }}" -keystore "{{ gluu_jdk_path }}/jre/lib/security/cacerts" -storepass "{{ gluu_jks_password }}"'
+      when: certificate_copy.changed or certificate_der_check.changed
+      ignore_errors: yes
+
+    - name: 'Gluu Cluster - Host {{ item }} - Certificate {{ certificate.key }} - Store public key in Java Key Store'
+      command: '{{ gluu_jdk_path }}/bin/keytool -import -trustcacerts -alias "{{ gluu_internal_hostname }}_{{ gluu_internal_hostname_other }}_{{ certificate.key }}" -file "/opt/gluu-server-{{ gluu_version }}/etc/certs/{{ gluu_internal_hostname_other }}_{{ certificate.value.publicKey | basename }}" -keystore "{{ gluu_jdk_path }}/jre/lib/security/cacerts" -storepass "{{ gluu_jks_password }}" -noprompt '
+      when: certificate_copy.changed or certificate_der_check.changed
+  when: "certificate.shareable is defined and certificate.shareable"

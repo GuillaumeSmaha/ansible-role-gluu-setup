@@ -1,0 +1,8 @@
+
+- name: Gluu - Get JDK Path
+  command: 'grep -oP "jreDestinationPath=\K(.+)" /opt/gluu-server-{{ gluu_version }}/install/community-edition-setup/setup.properties.last'
+  register: gluu_jdk_path
+  
+- name: Gluu - Set Global Parameter
+  set_fact:
+    gluu_jdk_path: "/opt/gluu-server-{{ gluu_version }}{{ gluu_jdk_path.stdout }}"

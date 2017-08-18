@@ -1,0 +1,10 @@
+  
+  
+
+- name: "Gluu Cluster - SSH Key - Add Gluu Cluster Manager public key"
+  authorized_key:
+    user: root
+    key: "{{ hostvars[item].gluu_cluster_manager_public_key.stdout }}"
+  with_items:
+    "{{ groups['gluu-cluster-manager'] }}"
+  when: "'gluu-cluster-manager' in groups"

@@ -1,0 +1,13 @@
+---
+gluu_modules_list:
+  download_wars: downloadWars
+  oxauth: installOxAuth
+  oxtrust: installOxTrust
+  ldap: installLDAP
+  httpd: installHTTPD
+  saml: installSaml
+  asimba: installAsimba
+  cas: installCas
+  oxauth-rp: installOxAuthRP
+  passport: installPassport
+  jce: installJce

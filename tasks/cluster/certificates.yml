@@ -1,0 +1,9 @@
+---
+
+- name: Gluu Cluster - Install certificates from other servers
+  include: certificates-each-server.yml
+  with_items:
+    "{{ groups['gluu-servers'] }}"
+  when: item != inventory_hostname
+  loop_control:
+    loop_var: item

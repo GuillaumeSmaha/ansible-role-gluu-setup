@@ -1,0 +1,37 @@
+
+gluu_version: 3.0.2
+
+gluu_hostname: '{{ ansible_ssh_host }}'
+
+gluu_internal_hostname: '{{ gluu_hostname }}'
+
+gluu_ip: "{{ lookup('dig', '{{ gluu_internal_hostname }}.') }}"
+
+gluu_modules:
+  - oxauth
+  - oxtrust
+  - ldap
+  - httpd
+
+gluu_ldap_custom_schema_file: custom_schema.json.default
+
+gluu_jks_password: changeit
+
+gluu_cluster: False
+
+gluu_cluster_ldap_replication: False
+
+gluu_install_from:
+
+gluu_ldap_password:
+gluu_inum_base:
+gluu_inum_org: 
+gluu_inum_appliance:
+
+gluu_certificate_properties:
+  org_name: Organization
+  country_code: CA
+  city: Montreal
+  state: QC
+
+gluu_default_setup_properties:

@@ -1,0 +1,32 @@
+---
+# Parameters
+- name: Include variables.
+  include_vars: "all.yml"
+
+# Variable setup
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# Setup/install tasks
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Install global python requirements
+  pip: name={{item}} state=present
+  with_items:
+    - dpath
+    - pyDes
+    - python-ldap
+    - ldap3
+  
+- include: gluu-setup.yml
+
+- include: "gluu-get-configuration.yml"
+
+- include: "certificates.yml"
+
+- include: "cluster/main.yml"
+  when: gluu_cluster == true

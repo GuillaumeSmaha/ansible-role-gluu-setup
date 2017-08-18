@@ -1,0 +1,41 @@
+
+
+### The cn=Directory Manager's password in ldap
+ldapPass={{ gluu_ldap_password }}
+
+### Do not change this unless you know what you're doing
+baseInum={{ gluu_inum_base }}
+
+### Do not change this unless you know what you're doing
+inumOrg={{ gluu_inum_org }}
+
+### Do not change this unless you know what you're doing
+inumAppliance={{ gluu_inum_appliance }}
+
+### This information is needed for self signed certificate
+orgName={{ gluu_certificate_properties.org_name }}
+countryCode={{ gluu_certificate_properties.country_code }}
+city={{ gluu_certificate_properties.city }}
+state={{ gluu_certificate_properties.state }}
+
+### The default configuration from another computer
+{{ gluu_default_setup_properties }}
+
+
+### IP Address of the interface to host IDP
+ip={{ gluu_ip }}
+
+### The hostname of the server
+hostname={{ gluu_hostname }}
+
+
+# Gluu Modules
+# Default values
+{% for key, value in gluu_modules_list.items() %}
+{{ value }}=False
+{% endfor %}
+# Modules enabled:
+{% for module in gluu_modules %}
+{{ gluu_modules_list[ module ] }}=True
+{% endfor %}
+
