@@ -1,8 +1,14 @@
 
+- name: Gluu - Get LDAP Admin password
+  command: 'grep -oP "ldapPass=\K(.+)" /opt/gluu-server-{{ gluu_version }}/install/community-edition-setup/setup.properties.last'
+  register: gluu_ldap_admin_password
+
 - name: Gluu - Get JDK Path
   command: 'grep -oP "jreDestinationPath=\K(.+)" /opt/gluu-server-{{ gluu_version }}/install/community-edition-setup/setup.properties.last'
   register: gluu_jdk_path
   
 - name: Gluu - Set Global Parameter
   set_fact:
+    gluu_ldap_admin_password: "{{ gluu_ldap_admin_password.stdout }}"
+    gluu_ldap_admin_password_obscured: "{{ gluu_ldap_admin_password.stdout | gluu_ssha_user_password() }}"
     gluu_jdk_path: "/opt/gluu-server-{{ gluu_version }}{{ gluu_jdk_path.stdout }}"

@@ -29,7 +29,7 @@
       command: '{{ gluu_container_command }} "chown -R ldap /opt/gluu/data/"'
         
     - name: "Gluu Cluster - OpenLDAP - Stop LDAP server"
-      command: '{{ gluu_container_command }} "service solserver stop'
+      command: '{{ gluu_container_command }} "service solserver stop"'
 
     - set_fact:
         first_ldap_host: ""
@@ -42,10 +42,29 @@
         
     - name: "Gluu Cluster - OpenLDAP - Erase LDAP database file"
       command: '{{ gluu_container_command }} "rm /opt/gluu/data/main_db/*.mdb"'
-      when: "inventory_hostname == first_ldap_host"
+      when: "inventory_hostname != first_ldap_host"
 
-  lineinfile:
-    path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/symas-openldap.conf
-    regexp: '^EXTRA_SLAPD_ARGS="'
-    line: 'EXTRA_SLAPD_ARGS="-F /opt/symas/etc/openldap/slapd.d"'
-  when: gluu_cluster_ldap_replication and gluu_cluster_ldap_replication.stat.exists == False
+    - name: "Gluu Cluster - OpenLDAP - Copy new slapd.conf file"
+      template:
+        src: cluster/slapd.conf.j2
+        dest: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/slapd.conf
+
+    - name: "Gluu Cluster - OpenLDAP - Create ldap.conf file"
+      file:
+        path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/ldap.conf
+        state: touch
+
+    - name: "Gluu Cluster - OpenLDAP - Allow self-signed certificate"
+      lineinfile:
+        path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/ldap.conf
+        regexp: '^TLS_REQCERT '
+        line: 'TLS_REQCERT never'
+
+    - name: "Gluu Cluster - OpenLDAP - Add self-signed certificate"
+      lineinfile:
+        path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/ldap.conf
+        regexp: '^TLS_CACERT '
+        line: 'TLS_CACERT /etc/certs/openldap.pem'
+
+    - name: "Gluu Cluster - OpenLDAP - Start LDAP server"
+      command: '{{ gluu_container_command }} "service solserver start"'
