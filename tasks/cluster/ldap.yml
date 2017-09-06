@@ -30,21 +30,6 @@
     - name: "Gluu Cluster - OpenLDAP - Stop LDAP server"
       command: '{{ gluu_container_command }} "service solserver stop"'
 
-    - name: "Gluu Cluster - OpenLDAP - Initialize vars"
-      set_fact:
-        first_ldap_host: ""
-
-    - name: "Gluu Cluster - OpenLDAP - Get hostname of first LDAP server"
-      set_fact:
-        first_ldap_host: "{{ item }}"
-      when: "'ldap' in hostvars[item].gluu_modules and first_ldap_host == ''"
-      with_items:
-        "{{ groups['gluu-servers'] }}"
-        
-    - name: "Gluu Cluster - OpenLDAP - Erase LDAP database file"
-      command: '{{ gluu_container_command }} "rm /opt/gluu/data/main_db/*.mdb"'
-      when: ldap_replication_is_setup.stat.exists == False and "inventory_hostname != first_ldap_host"
-
     - name: "Gluu Cluster - OpenLDAP - Copy new slapd.conf file"
       template:
         src: cluster/slapd.conf.j2
