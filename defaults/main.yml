@@ -5,7 +5,7 @@ gluu_hostname: '{{ ansible_ssh_host }}'
 
 gluu_internal_hostname: '{{ gluu_hostname }}'
 
-gluu_ip: "{{ lookup('dig', '{{ gluu_internal_hostname }}.') }}"
+gluu_ip: "{{ lookup('dig', '{{ gluu_internal_hostname }}.') | regex_replace('^NXDOMAIN$', '{{ gluu_internal_hostname }}') }}"
 
 gluu_modules:
   - oxauth
@@ -20,6 +20,8 @@ gluu_jks_password: changeit
 gluu_cluster: False
 
 gluu_cluster_ldap_replication: False
+
+gluu_cluster_ldap_replication_without_cluster_manager: False
 
 gluu_install_from:
 

@@ -77,7 +77,7 @@ vars:
   gluu_hostname: '{{ ansible_ssh_host }}'
 
   # IP address of the host.
-  gluu_ip: '{{ lookup('dig', '{{ gluu_internal_hostname }}.')}}'
+  gluu_ip: "{{ lookup('dig', '{{ gluu_internal_hostname }}.') | regex_replace('^NXDOMAIN$', '{{ gluu_internal_hostname }}') }}"
 
 
   # List of the modules to install
@@ -185,8 +185,12 @@ vars:
   gluu_internal_hostname: '{{ gluu_hostname }}'
 
   # When gluu_cluster = True, define if there is multiple LDAP servers with replication.
-  # This parameter enable the configuration EXTRA_SLAPD_ARGS="-F /opt/symas/etc/openldap/slapd.d".
   gluu_cluster_ldap_replication: False
+
+  # When gluu_cluster = True and gluu_cluster_ldap_replication = True, define if the LDAP configuration will be set by ansible or with the cluster manager Web GUI.with replication.
+  # With gluu_cluster_ldap_replication = False, this parameter enable the configuration EXTRA_SLAPD_ARGS="-F /opt/symas/etc/openldap/slapd.d".
+  # With gluu_cluster_ldap_replication = True, the slapd.conf file will be edited to set the replication between all servers with the LDAP module
+  gluu_cluster_ldap_replication_without_cluster_manager: False
 
   # When gluu_cluster = True, this parameter allow to set as default configuration another host configuration.
   # To use it you have to be careful with the order of execution of the ansible for each host.
@@ -249,4 +253,3 @@ Sample projects
 You can find a full example of a playbook here:
 
 https://github.com/GuillaumeSmaha/ansible-gluu-playbook
-

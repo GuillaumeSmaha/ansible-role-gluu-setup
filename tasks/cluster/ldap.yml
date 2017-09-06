@@ -3,20 +3,20 @@
   lineinfile:
     path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/symas-openldap.conf
     regexp: '^HOST_LIST=".*'
-    line: 'HOST_LIST="ldaps://127.0.0.1:1636/ ldaps://{{ gluu_ip }}:1636/"'
+    line: 'HOST_LIST="ldaps://127.0.0.1:1636/ ldaps://0.0.0.0:1636/"'
 
-# - name: "Gluu Cluster - OpenLDAP - Update ExtraArgs"
-#   lineinfile:
-#     path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/symas-openldap.conf
-#     regexp: '^EXTRA_SLAPD_ARGS="'
-#     line: 'EXTRA_SLAPD_ARGS="-F /opt/symas/etc/openldap/slapd.d"'
-#   when: gluu_cluster_ldap_replication
+- name: "Gluu Cluster - OpenLDAP - Update ExtraArgs"
+  lineinfile:
+    path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/symas-openldap.conf
+    regexp: '^EXTRA_SLAPD_ARGS="'
+    line: 'EXTRA_SLAPD_ARGS="-F /opt/symas/etc/openldap/slapd.d"'
+  when: gluu_cluster_ldap_replication and not gluu_cluster_ldap_replication_without_cluster_manager
 
 - name: Check if LDAP replication is already setup
   stat:
     path: /opt/gluu-server-{{ gluu_version }}/opt/gluu/data/accesslog_db
   register: ldap_replication_is_setup
-  when: gluu_cluster_ldap_replication
+  when: gluu_cluster_ldap_replication and gluu_cluster_ldap_replication_without_cluster_manager
 
 - name: "Gluu Cluster - OpenLDAP - Replication"
   block:
@@ -31,10 +31,12 @@
     - name: "Gluu Cluster - OpenLDAP - Stop LDAP server"
       command: '{{ gluu_container_command }} "service solserver stop"'
 
-    - set_fact:
+    - name: "Gluu Cluster - OpenLDAP - Initialize vars"
+      set_fact:
         first_ldap_host: ""
 
-    - set_fact:
+    - name: "Gluu Cluster - OpenLDAP - Get hostname of first LDAP server"
+      set_fact:
         first_ldap_host: "{{ item }}"
       when: "'ldap' in hostvars[item].gluu_modules and first_ldap_host == ''"
       with_items:
@@ -42,7 +44,7 @@
         
     - name: "Gluu Cluster - OpenLDAP - Erase LDAP database file"
       command: '{{ gluu_container_command }} "rm /opt/gluu/data/main_db/*.mdb"'
-      when: "inventory_hostname != first_ldap_host"
+      when: ldap_replication_is_setup.exists and "inventory_hostname != first_ldap_host"
 
     - name: "Gluu Cluster - OpenLDAP - Copy new slapd.conf file"
       template:
@@ -68,3 +70,4 @@
 
     - name: "Gluu Cluster - OpenLDAP - Start LDAP server"
       command: '{{ gluu_container_command }} "service solserver start"'
+  when: gluu_cluster_ldap_replication and gluu_cluster_ldap_replication_without_cluster_manager
