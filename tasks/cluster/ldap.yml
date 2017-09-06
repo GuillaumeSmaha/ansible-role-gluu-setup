@@ -3,7 +3,7 @@
   lineinfile:
     path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/symas-openldap.conf
     regexp: '^HOST_LIST=".*'
-    line: 'HOST_LIST="ldaps://127.0.0.1:1636/ ldaps://0.0.0.0:1636/"'
+    line: 'HOST_LIST="ldaps://127.0.0.1:1636/ ldaps://{{ gluu_ip }}:1636/"'
 
 - name: "Gluu Cluster - OpenLDAP - Update ExtraArgs"
   lineinfile:
@@ -12,14 +12,13 @@
     line: 'EXTRA_SLAPD_ARGS="-F /opt/symas/etc/openldap/slapd.d"'
   when: gluu_cluster_ldap_replication and not gluu_cluster_ldap_replication_without_cluster_manager
 
-- name: Check if LDAP replication is already setup
-  stat:
-    path: /opt/gluu-server-{{ gluu_version }}/opt/gluu/data/accesslog_db
-  register: ldap_replication_is_setup
-  when: gluu_cluster_ldap_replication and gluu_cluster_ldap_replication_without_cluster_manager
-
 - name: "Gluu Cluster - OpenLDAP - Replication"
   block:
+    - name: Check if LDAP replication is already setup
+      stat:
+        path: /opt/gluu-server-{{ gluu_version }}/opt/gluu/data/accesslog_db
+      register: ldap_replication_is_setup
+
     - name: "Gluu Cluster - OpenLDAP - Create accesslog_db directory"
       file:
         path: '/opt/gluu-server-{{ gluu_version }}/opt/gluu/data/accesslog_db'
@@ -44,7 +43,7 @@
         
     - name: "Gluu Cluster - OpenLDAP - Erase LDAP database file"
       command: '{{ gluu_container_command }} "rm /opt/gluu/data/main_db/*.mdb"'
-      when: ldap_replication_is_setup.exists and "inventory_hostname != first_ldap_host"
+      when: ldap_replication_is_setup.stat.exists == False and "inventory_hostname != first_ldap_host"
 
     - name: "Gluu Cluster - OpenLDAP - Copy new slapd.conf file"
       template:

@@ -77,7 +77,7 @@ vars:
   gluu_hostname: '{{ ansible_ssh_host }}'
 
   # IP address of the host.
-  gluu_ip: "{{ lookup('dig', '{{ gluu_internal_hostname }}.') | regex_replace('^NXDOMAIN$', '{{ gluu_internal_hostname }}') }}"
+  gluu_ip: '{{ lookup("dig", "{{ gluu_internal_hostname }}.") | regex_replace("^NXDOMAIN$", "") | default(gluu_internal_hostname, true) }}'
 
 
   # List of the modules to install
