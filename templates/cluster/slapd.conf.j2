@@ -13,13 +13,14 @@ include		"/opt/symas/etc/openldap/schema/eduperson.schema"
 include		"/opt/gluu/schema/openldap/gluu.schema"
 include		"/opt/gluu/schema/openldap/custom.schema"
 
-{% set count = 0 %}
+{% set var = {'count': 0} %}
 {% for host in groups['gluu-servers'] %}
 {% if 'ldap' in hostvars[host].gluu_modules %}
-{% set count = count + 1 %}
+{% if var.update({'count':var.count + 1}) %} {% endif %}
+# {{ host }}
 {% if inventory_hostname == host %}
 
-serverid {{ (count|string).zfill(3) }}
+serverid {{ var.count|string }}
 
 {% endif %}
 {% endif %}
@@ -137,19 +138,18 @@ unique_uri	ldap:///?mail?sub?(objectClass=gluuPerson)
 #######################################################################
 
 
-{% set count = 0 %}
+{% set var = {'count': 0} %}
 {% for host in groups['gluu-servers'] %}
 {% if 'ldap' in hostvars[host].gluu_modules %}
-{% set count = count + 1 %}
+{% if var.update({'count':var.count + 1}) %} {% endif %}
 {% if inventory_hostname != host %}
-{% set count = count + 1 %}
 syncrepl
-    rid={{ (count|string).zfill(3) }}
+    rid={{ (var.count|string).zfill(3) }}
     provider=ldaps://{{ hostvars[host]['gluu_internal_hostname'] }}:1636
     tls_reqcert=never
     bindmethod=simple
     binddn="cn=directory manager,o=gluu"
-    credentials={{ gluu_ldap_admin_password_obscured }}
+    credentials={{ gluu_ldap_admin_password }}
     type=refreshAndPersist
     searchbase="o=gluu"
     filter="(objectclass=*)"
