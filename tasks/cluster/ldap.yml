@@ -1,4 +1,27 @@
 
+- name: "Gluu Cluster - OpenLDAP - Intall ntp (Debian)"
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    state: installed
+  with_items:
+    - ntp
+  when: ansible_os_family == 'Debian'
+
+- name: "Gluu Cluster - OpenLDAP - Intall ntp (RedHat)"
+  yum:
+    name: "{{item}}"
+    state: installed
+  with_items:
+    - ntp
+  when: ansible_os_family == 'RedHat'
+
+- name: "Gluu Cluster - OpenLDAP - Enable ntpd service"
+  service:
+    name: ntpd
+    state: started
+    enabled: yes
+
 - name: "Gluu Cluster - OpenLDAP - listen for external IP"
   lineinfile:
     path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/symas-openldap.conf
