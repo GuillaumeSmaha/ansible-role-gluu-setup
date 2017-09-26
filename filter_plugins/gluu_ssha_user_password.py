@@ -43,6 +43,7 @@ EXAMPLES = '''
 
 from ansible import errors
 from ansible.module_utils.basic import *
+from ansible.module_utils.six import string_types
 import os
 import base64
 
@@ -57,7 +58,7 @@ class FilterModule(object):
 
         if isinstance(content, dict):
             return self.gluu_ssha_user_password_dict(content, key, ignore_notfound)
-        elif isinstance(content, str):
+        elif isinstance(content, string_types):
             return self.gluu_ssha_user_password_str(content)
 
         return content
