@@ -16,6 +16,11 @@
     state: installed
     enablerepo: gluu
 
+- name: Enable epel-release repository
+  yum:
+    name: epel-release
+    state: installed
+
 - name: Install global python requirements for pip
   yum:
     name: "{{item}}"
@@ -32,4 +37,3 @@
 
 - name: Start Gluu service
   command: /sbin/gluu-serverd-{{ gluu_version }} start
-
