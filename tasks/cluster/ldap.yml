@@ -1,24 +1,22 @@
 
 - name: "Gluu Cluster - OpenLDAP - Intall ntp (Debian)"
   apt:
-    name: "{{item}}"
     update_cache: yes
-    state: installed
-  with_items:
-    - ntp
+    state: present
+    name:
+     - ntp
   when: ansible_os_family == 'Debian'
 
 - name: "Gluu Cluster - OpenLDAP - Intall ntp (RedHat)"
   yum:
-    name: "{{item}}"
-    state: installed
-  with_items:
-    - ntp
+    state: present
+    name:
+     - ntp
   when: ansible_os_family == 'RedHat'
 
-- name: "Gluu Cluster - OpenLDAP - Enable ntpd service"
+- name: "Gluu Cluster - OpenLDAP - Enable ntp service"
   service:
-    name: ntpd
+    name: ntp
     state: started
     enabled: yes
 

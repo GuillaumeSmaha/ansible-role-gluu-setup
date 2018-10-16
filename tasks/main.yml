@@ -15,12 +15,13 @@
   when: ansible_os_family == 'Debian'
 
 - name: Install global python requirements
-  pip: name={{item}} state=present
-  with_items:
-    - dpath
-    - pyDes
-    - python-ldap
-    - ldap3
+  pip:
+    state: present
+    name:
+     - dpath
+     - pyDes
+     - python-ldap
+     - ldap3
   
 - include: gluu-setup.yml
 

@@ -19,18 +19,18 @@
 - name: Enable epel-release repository
   yum:
     name: epel-release
-    state: installed
+    state: present
 
 - name: Install global python requirements for pip
   yum:
-    name: "{{item}}"
-    state: installed
-  with_items:
-    - gcc
-    - python-devel
-    - openldap-devel
-    - python-pip
-    - zip
+    update_cache: yes
+    state: present
+    name:
+     - gcc
+     - python-devel
+     - openldap-devel
+     - python-pip
+     - zip
 
 - name: Enable Gluu service
   command: /sbin/gluu-serverd-{{ gluu_version }} enable

@@ -12,20 +12,19 @@
   apt:
     name: "gluu-server-{{ gluu_version }}*"
     update_cache: yes
-    state: installed
+    state: present
 
 - name: Install global python requirements for pip
   apt:
-    name: "{{item}}"
     update_cache: yes
-    state: installed
-  with_items:
-    - libsasl2-dev
-    - python-dev
-    - libldap2-dev
-    - libssl-dev
-    - python-pip
-    - zip
+    state: present
+    name:
+     - libsasl2-dev
+     - python-dev
+     - libldap2-dev
+     - libssl-dev
+     - python-pip
+     - zip
 
 - name: Start and Enable Gluu container
   service:
