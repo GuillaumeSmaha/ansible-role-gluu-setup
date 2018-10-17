@@ -1,5 +1,5 @@
 
-gluu_version: 3.0.2
+gluu_version: 3.1.4
 
 gluu_hostname: '{{ ansible_ssh_host }}'
 
@@ -12,6 +12,8 @@ gluu_modules:
   - oxtrust
   - ldap
   - httpd
+
+gluu_ldap_server: openldap
 
 gluu_ldap_custom_schema_file: custom_schema.json.default
 

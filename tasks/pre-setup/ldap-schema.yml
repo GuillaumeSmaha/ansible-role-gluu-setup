@@ -15,9 +15,9 @@
 
 - name: PreInstall - LDAP - Generate OpenLDAP schema
   command: "{{ gluu_container_command }} 'cd /install/community-edition-setup/schema/ && python manager.py --type openldap --filename custom_schema.json autogenerate'"
-  when: ldap_copy_custom_schema.changed
+  when: gluu_ldap_server == 'openldap' and ldap_copy_custom_schema.changed
 
 - name: PreInstall - LDAP - Generate OpenDJ schema
   command: "{{ gluu_container_command }} 'cd /install/community-edition-setup/schema/ && python manager.py --type opendj --filename custom_schema.json autogenerate'"
-  when: ldap_copy_custom_schema.changed
+  when: gluu_ldap_server == 'opendj' and ldap_copy_custom_schema.changed
   

@@ -123,6 +123,15 @@ vars:
   #      privateKey: "{{ playbook_dir }}/templates/{{ inventory_dir | basename }}/certificates/idp-signing.key"
   gluu_certificates:
 
+
+  # Type of LDAP server
+  # Since Gluu 3.1.2, you can choose the type of LDAP server.
+  # This script only support openLDAP for LDAP replication.
+  # Available LDAP server:
+  # - openldap
+  # - opendj
+  gluu_ldap_server: openldap
+
   # File to customize the LDAP schema
   gluu_ldap_custom_schema_file: custom_schema.json.default
 
