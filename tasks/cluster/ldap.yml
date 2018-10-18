@@ -56,23 +56,6 @@
         src: cluster/slapd.conf.j2
         dest: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/slapd.conf
 
-    - name: "Gluu Cluster - OpenLDAP - Create ldap.conf file"
-      file:
-        path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/ldap.conf
-        state: touch
-
-    - name: "Gluu Cluster - OpenLDAP - Allow self-signed certificate"
-      lineinfile:
-        path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/ldap.conf
-        regexp: '^TLS_REQCERT '
-        line: 'TLS_REQCERT never'
-
-    - name: "Gluu Cluster - OpenLDAP - Add self-signed certificate"
-      lineinfile:
-        path: /opt/gluu-server-{{ gluu_version }}/opt/symas/etc/openldap/ldap.conf
-        regexp: '^TLS_CACERT '
-        line: 'TLS_CACERT /etc/certs/openldap.pem'
-
     - name: "Gluu Cluster - OpenLDAP - Start LDAP server"
       command: '{{ gluu_container_command }} "service solserver start"'
   when: gluu_cluster_ldap_replication and gluu_cluster_ldap_replication_without_cluster_manager

@@ -112,12 +112,6 @@ vars:
   #   - shipIDP
   # Example:
   #  gluu_certificates:
-  #    ldap_root_ca:
-  #      publicKey: "{{ playbook_dir }}/templates/{{ inventory_dir | basename }}/certificates/openldap_root_ca.crt"
-  #    openldap:
-  #      publicKey: "{{ playbook_dir }}/templates/{{ inventory_dir | basename }}/certificates/openldap.crt"
-  #      privateKey: "{{ playbook_dir }}/templates/{{ inventory_dir | basename }}/certificates/openldap.key"
-  #      shareable: true
   #    idp-signing:
   #      publicKey: "{{ playbook_dir }}/templates/{{ inventory_dir | basename }}/certificates/idp-signing.crt"
   #      privateKey: "{{ playbook_dir }}/templates/{{ inventory_dir | basename }}/certificates/idp-signing.key"
@@ -130,7 +124,16 @@ vars:
   # Available LDAP server:
   # - openldap
   # - opendj
+  # Default: openldap
   gluu_ldap_server: openldap
+
+  # Custom certificate for LDAP server & client
+  # Gluu oxAuth/oxTrust client need a pkcs12 file with private and public key
+  # Default:
+  gluu_ldap_certificate:
+    cert_ca_file:
+    cert_file:
+    cert_key_file:
 
   # File to customize the LDAP schema
   gluu_ldap_custom_schema_file: custom_schema.json.default

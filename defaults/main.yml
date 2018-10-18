@@ -15,6 +15,11 @@ gluu_modules:
 
 gluu_ldap_server: openldap
 
+gluu_ldap_certificate:
+  cert_ca_file:
+  cert_file:
+  cert_key_file:
+
 gluu_ldap_custom_schema_file: custom_schema.json.default
 
 gluu_jks_password: changeit

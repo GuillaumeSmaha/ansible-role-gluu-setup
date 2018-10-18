@@ -14,19 +14,18 @@
 
 - name: 'Certificate {{ certificate.key }} - Check DER public key exists'
   stat:
-    path: '/opt/gluu-server-{{ gluu_version }}/etc/certs/{{ certificate.value.publicKey | basename }}.der'
-  register: certificate_der_check
-  when: certificate_copy.changed == False
+    path: '/opt/gluu-server-{{ gluu_version }}/etc/certs/{{ (certificate.value.publicKey | basename | splitext)[0:-1]| join("") }}.der'
+  register: certificate_check_der
 
 - name: 'Certificate {{ certificate.key }} - Convert public key to DER format'
-  command: "openssl x509 -outform der -in /opt/gluu-server-{{ gluu_version }}/etc/certs/{{ certificate.value.publicKey | basename }} -out /opt/gluu-server-{{ gluu_version }}/etc/certs/{{ certificate.value.publicKey | basename }}.der"
-  when: certificate_copy.changed or certificate_der_check.changed
+  command: "openssl x509 -outform der -in /opt/gluu-server-{{ gluu_version }}/etc/certs/{{ certificate.value.publicKey | basename }} -out /opt/gluu-server-{{ gluu_version }}/etc/certs/{{ (certificate.value.publicKey | basename | splitext)[0:-1]| join('') }}.der"
+  when: certificate_check_der.stat.exists == False or (certificate_copy.changed and (certificate.value.publicKey | basename | splitext)[-1] != '.der') and certificate.value.convert_der is defined and certificate.value.convert_der
 
 - name: 'Certificate {{ certificate.key }} - Delete old public key from Java Key Store'
   command: '{{ gluu_jdk_path }}/bin/keytool -delete -alias "{{ gluu_hostname }}_{{ certificate.key }}" -keystore "{{ gluu_jdk_path }}/jre/lib/security/cacerts" -storepass "{{ gluu_jks_password }}"'
-  when: certificate_copy.changed or certificate_der_check.changed
+  when: certificate_copy.changed
   ignore_errors: yes
 
 - name: 'Certificate {{ certificate.key }} - Store public key in Java Key Store'
   command: '{{ gluu_jdk_path }}/bin/keytool -import -trustcacerts -alias "{{ gluu_hostname }}_{{ certificate.key }}" -file "/opt/gluu-server-{{ gluu_version }}/etc/certs/{{ certificate.value.publicKey | basename }}" -keystore "{{ gluu_jdk_path }}/jre/lib/security/cacerts" -storepass "{{ gluu_jks_password }}" -noprompt '
-  when: certificate_copy.changed or certificate_der_check.changed
+  when: certificate_copy.changed
