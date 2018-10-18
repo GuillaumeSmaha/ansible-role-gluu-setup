@@ -42,7 +42,6 @@ EXAMPLES = '''
 
 
 from ansible import errors
-from ansible.module_utils.basic import FilterModule
 from ansible.module_utils.six import string_types
 import os
 import base64
