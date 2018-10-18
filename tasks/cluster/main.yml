@@ -1,5 +1,4 @@
-
-
+---
 - include: "certificates.yml"
 
 - include: "ldap.yml"

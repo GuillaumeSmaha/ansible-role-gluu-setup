@@ -1,5 +1,4 @@
-
-
+---
 - name: PreInstall - LDAP - Install python-ldap inside container for Ubuntu
   command: "{{ gluu_container_command }} 'apt-get install python-ldap'"
   when: ansible_os_family == 'Debian'

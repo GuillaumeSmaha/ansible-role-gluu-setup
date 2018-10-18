@@ -1,4 +1,4 @@
-
+---
 - name: Gluu - Get LDAP Admin password
   command: 'grep -oP "ldapPass=\K(.+)" /opt/gluu-server-{{ gluu_version }}/install/community-edition-setup/setup.properties.last'
   register: gluu_ldap_admin_password

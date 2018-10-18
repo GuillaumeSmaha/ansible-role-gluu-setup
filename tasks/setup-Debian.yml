@@ -31,4 +31,3 @@
     name: gluu-server-{{ gluu_version }}
     state: started
     enabled: yes
-

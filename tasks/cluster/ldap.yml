@@ -1,4 +1,4 @@
-
+---
 - name: "Gluu Cluster - OpenLDAP - Intall ntp (Debian)"
   apt:
     update_cache: yes

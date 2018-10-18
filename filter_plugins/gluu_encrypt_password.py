@@ -45,10 +45,10 @@ EXAMPLES = '''
 '''
 
 from ansible import errors
-from ansible.module_utils.basic import *
+from ansible.module_utils.basic import FilterModule
 from ansible.module_utils.six import string_types
 import base64
-from pyDes import *
+from pyDes import triple_des, ECB, PAD_PKCS5
 
 
 class FilterModule(object):
