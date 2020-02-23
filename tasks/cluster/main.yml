@@ -4,6 +4,4 @@
 - include: "ldap.yml"
   when: "'ldap' in gluu_modules"
 
-- include: "ldap-client.yml"
-
 - include: "sshkey.yml"
